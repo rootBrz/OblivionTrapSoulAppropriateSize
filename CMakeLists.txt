@@ -10,6 +10,15 @@ set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
+# MinHook
+set(MINHOOK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/minhook)
+file(GLOB MINHOOK_SOURCES
+    "${MINHOOK_DIR}/src/*.c"
+    "${MINHOOK_DIR}/src/hde/*.c"
+)
+add_library(minhook STATIC ${MINHOOK_SOURCES})
+target_include_directories(minhook PUBLIC "${MINHOOK_DIR}/include")
+
 # DLL Details
 SET(CMAKE_RC_COMPILER "windres")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
@@ -33,6 +42,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -O3 -flto -ffunction-sections -fdata-sections)
 target_link_options(${PROJECT_NAME} PRIVATE -static -Wl,--gc-sections)
+target_link_libraries(${PROJECT_NAME} PRIVATE minhook)
 
 # POST BUILD
 set(OBR_PATH $ENV{OBR_PATH})
